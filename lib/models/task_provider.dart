@@ -15,7 +15,7 @@ class TaskProvider extends ChangeNotifier {
   List<Task> _bookmarkedTasks = [];
   List<Task> _taskHistory = [
     Task(taskTitle: 'Bath'),
-    Task(taskTitle: 'Call police'),
+    Task(taskTitle: 'Call Dad'),
   ];
 
   UnmodifiableListView<Task> get getTasks {
