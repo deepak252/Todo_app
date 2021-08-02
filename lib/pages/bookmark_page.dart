@@ -49,119 +49,127 @@ class _BookmarkPageState extends State<BookmarkPage> {
             return CircularBorderCardWidget(
               padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               elevation: 3,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Text(
-                              '${bookmarks[index].taskTitle}',
-                              style: TextStyle(
-                                  color: Color(0xff6c40ff),
-                                  fontWeight: FontWeight.bold),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        Transform.translate(
-                          offset: Offset(10, -5),
-                          child: PopupMenuButton(
-                            onSelected: (value) {
-                              switch (value) {
-                                case 0:
-                                  {
-                                    taskProvider.deleteTask(bookmarks[index]);
-                                    setState(() {});
-                                    return;
-                                  }
-                                case 1:
-                                  {
-                                    print('bookmarked');
-                                    return;
-                                  }
-                                case 2:
-                                  {
-                                    taskProvider.deleteTask(bookmarks[index]);
-                                    setState(() {});
-                                    return;
-                                  }
-                              }
-                            },
+              child: InkWell(
+                onTap: () {
+                  buildTaskViewerDialog(context, bookmarks[index]);
+                },
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Icon(
-                                Icons.more_vert,
-                                size: 14,
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Text(
+                                '${bookmarks[index].taskTitle}',
+                                style: TextStyle(
+                                    color: Color(0xff6c40ff),
+                                    fontWeight: FontWeight.bold),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry>[
-                              buildPopupMenuItem(
-                                value: 0,
-                                iconWidget: Icon(
-                                  Icons.done,
-                                  size: 14,
-                                ),
-                                textWidget: Text(
-                                  'Mark as Done',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ),
-                              buildPopupMenuItem(
-                                value: 1,
-                                iconWidget: Icon(
-                                  Icons.bookmark_outline,
-                                  size: 14,
-                                ),
-                                textWidget: Text(
-                                  'Bookmark',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ),
-                              buildPopupMenuItem(
-                                value: 2,
-                                iconWidget: Icon(
-                                  Icons.delete_outlined,
-                                  size: 14,
-                                ),
-                                textWidget: Text(
-                                  'Delete',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ),
-                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            bookmarks[index].taskDescription ?? 'No description.',
-                            style: TextStyle(
-                              fontSize: 11,
+                          Transform.translate(
+                            offset: Offset(5, -5),
+                            child: PopupMenuButton(
+                              onSelected: (value) {
+                                switch (value) {
+                                  case 0:
+                                    {
+                                      taskProvider.deleteTask(bookmarks[index]);
+                                      setState(() {});
+                                      return;
+                                    }
+                                  case 1:
+                                    {
+                                      print('bookmarked');
+                                      return;
+                                    }
+                                  case 2:
+                                    {
+                                      taskProvider.deleteTask(bookmarks[index]);
+                                      setState(() {});
+                                      return;
+                                    }
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Icon(
+                                  Icons.more_vert,
+                                  size: 14,
+                                ),
+                              ),
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry>[
+                                buildPopupMenuItem(
+                                  value: 0,
+                                  iconWidget: Icon(
+                                    Icons.done,
+                                    size: 14,
+                                  ),
+                                  textWidget: Text(
+                                    'Mark as Done',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                                buildPopupMenuItem(
+                                  value: 1,
+                                  iconWidget: Icon(
+                                    Icons.bookmark_outline,
+                                    size: 14,
+                                  ),
+                                  textWidget: Text(
+                                    'Bookmark',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                                buildPopupMenuItem(
+                                  value: 2,
+                                  iconWidget: Icon(
+                                    Icons.delete_outlined,
+                                    size: 14,
+                                  ),
+                                  textWidget: Text(
+                                    'Delete',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                              ],
                             ),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
                           ),
+                        ],
+                      ),
+                      Text(
+                        bookmarks[index].taskDescription ?? 'No description.',
+                        style: TextStyle(
+                          fontSize: 11,
                         ),
-                        // IconButton(
-                        //   onPressed: (){},
-                        //   icon: Icon(Icons.done )
-                        // )
-                      ],
-                    )
-                  ],
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      bookmarks[index].isBookmared!
+                          ? Align(
+                              alignment: Alignment.bottomRight,
+                              child: Transform.translate(
+                                offset: Offset(5, 20),
+                                child: Icon(
+                                  Icons.bookmark,
+                                  color: Colors.orange,
+                                  size: 20,
+                                ),
+                              ),
+                            )
+                          : Container(),
+
+                    ],
+                  ),
                 ),
               ),
             );
@@ -185,6 +193,56 @@ class _BookmarkPageState extends State<BookmarkPage> {
             textWidget
           ])),
     );
+  }
+
+  Future buildTaskViewerDialog(BuildContext context, Task task) async {
+    return await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+            scrollable: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Icon(
+                      Icons.close,
+                      size: 16,
+                    ),
+                  ),
+                ),
+                Text(
+                  task.taskTitle,
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Text(
+                  task.taskDescription ?? 'No Description',
+                  style: TextStyle(
+                    color: Colors.black54,
+                  ),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   

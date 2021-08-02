@@ -68,9 +68,34 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     ),
                     IconButton(
-                      onPressed: (){}, 
-                      icon: Icon(Icons.undo_sharp)
-                    )
+                      padding: EdgeInsets.all(0),
+                      splashRadius: 20,
+                      icon: Icon(
+                        Icons.undo,
+                        // color: Colors.red,
+                        size: 16,
+                      ),
+                      onPressed: () {
+                        taskProvider.unduDoneTask(history[index]);
+                        setState(() {
+                          
+                        });
+                      },
+                    ),
+                    IconButton(
+                      padding: EdgeInsets.all(0),
+                      splashRadius: 20,
+                      icon: Icon(
+                        Icons.delete,
+                        size: 16,
+                      ),
+                      onPressed: ()  {
+                        taskProvider.deleteHistory(history[index]);
+                        setState(() {
+                          
+                        });
+                      },
+                    ),
                   ],
                 ),
               ),

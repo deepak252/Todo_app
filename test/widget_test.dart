@@ -28,3 +28,86 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 }
+
+
+// void buildBottomSheet(BuildContext context) async {
+//   await showModalBottomSheet(
+//     context: context,
+//     builder: (builder) {
+//       return DraggableScrollableSheet(
+//         expand: true,
+//         initialChildSize: 0.5,
+//         maxChildSize: 0.9,
+//         minChildSize: 0.5,
+//         builder: (_, controller) => InkWell(
+//           onTap: () {},
+//           child: Container(
+//             padding: EdgeInsets.symmetric(horizontal: 12),
+//             // height: 50,
+//             decoration: BoxDecoration(
+//                 color: Colors.white,
+//                 borderRadius: BorderRadius.only(
+//                   topLeft: Radius.circular(12),
+//                   topRight: Radius.circular(12),
+//                 )),
+//             child: Column(
+//               children: [
+//                 const SizedBox(
+//                   height: 8,
+//                 ),
+//                 Center(
+//                   child: Container(
+//                     margin: EdgeInsets.only(bottom: 8.0),
+//                     height: 4,
+//                     width: 40,
+//                     decoration: BoxDecoration(
+//                         color: Colors.black87,
+//                         borderRadius: BorderRadius.circular(12)),
+//                   ),
+//                 ),
+//                 Expanded(
+//                   child: ListView(
+//                     controller: controller,
+//                     children: [
+//                       Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         // controller: controller,
+//                         children: [
+//                           const SizedBox(
+//                             height: 8,
+//                           ),
+//                           Text(
+//                             'CATEGORY',
+//                             style: TextStyle(
+//                               fontWeight: FontWeight.bold,
+//                             ),
+//                           ),
+//                           // FilterJobCategories(),
+//                           const SizedBox(
+//                             height: 8,
+//                           ),
+//                           Text(
+//                             'TYPES',
+//                             style: TextStyle(
+//                               fontWeight: FontWeight.bold,
+//                             ),
+//                           ),
+//                           // FilterJobCategories(),
+
+//                           // filterButton(context),
+//                         ],
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       );
+//       // return Container();
+//     },
+//     isScrollControlled: true,
+//     backgroundColor: Colors.transparent,
+//   );
+// }
