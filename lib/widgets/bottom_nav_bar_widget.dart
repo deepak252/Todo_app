@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/pages/history_page.dart';
 import 'package:todo_app/pages/bookmark_page.dart';
 
-import 'package:todo_app/pages/home_page.dart';
+import 'package:todo_app/pages/tasks_page.dart';
 
 class BottomNavBarWidget extends StatefulWidget {
   const BottomNavBarWidget({ Key? key }) : super(key: key);
@@ -67,7 +67,7 @@ class _BottomNavBarWidgetState extends State<BottomNavBarWidget> {
   Widget selectedPage() {
     switch (_index) {
       case 0:
-        return HomePage();
+        return TasksPage();
       case 1:
         return BookmarkPage();
       case 2:
