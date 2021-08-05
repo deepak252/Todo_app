@@ -22,14 +22,15 @@ class _TasksPageState extends State<TasksPage> {
   final TextEditingController _taskDescriptionController =
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  String? _taskTitle;
-  String? _taskDescription;
+  // String? _taskTitle;
+  // String? _taskDescription;
 
   @override
   Widget build(BuildContext context) {
     TaskProvider taskProvider =
         Provider.of<TaskProvider>(context, listen: false);
     return Scaffold(
+      backgroundColor: Color(0xffddebe9),
       resizeToAvoidBottomInset: false,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(35),
@@ -69,8 +70,7 @@ class _TasksPageState extends State<TasksPage> {
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          
+                        children: [                          
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
@@ -86,70 +86,114 @@ class _TasksPageState extends State<TasksPage> {
                           ),
                           Transform.translate(
                             offset: Offset(5, -5),
-                            child: PopupMenuButton(
-                              onSelected: (value) {
-                                switch (value) {
-                                  case 0:
-                                    {
-                                      taskProvider.markTaskAsDone(tasks[index]);
-                                      setState(() {});
-                                      return;
-                                    }
-                                  case 1:
-                                    {
-                                      print('bookmarked');
-                                      taskProvider.addToBookmark(tasks[index]);
-                                      setState(() {});
-                                      return;
-                                    }
-                                  case 2:
-                                    {
-                                      taskProvider.deleteTask(tasks[index]);
-                                      setState(() {});
-                                      return;
-                                    }
-                                }
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Icon(
-                                  Icons.more_vert,
-                                  size: 14,
+                            child: Row(
+                              children: [
+                                InkWell(
+                                  onTap: ()async {
+                                    _taskTitleController.text=tasks[index].taskTitle;
+                                    _taskDescriptionController.text=tasks[index].taskDescription=='No description'
+                                      ? ''
+                                      : tasks[index].taskDescription!;
+                                    await buildTaskEditingDialog(
+                                      context:context, 
+                                      taskProvider:taskProvider,
+                                      editTask: true,
+                                      index: index
+                                    );
+                                    _taskTitleController.clear();
+                                    _taskDescriptionController.clear();
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Icon(Icons.edit,size:12),
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                              ),
-                              itemBuilder: (BuildContext context) =>
-                                  <PopupMenuEntry>[
-                                buildPopupMenuItem(
-                                  value: 0,
-                                  iconWidget: Icon(
-                                    Icons.done,
-                                    size: 14,
-                                  ),
-                                  textWidget: Text(
-                                    'Mark as Done',
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ),
-                                buildPopupMenuItem(
-                                  value: 1,
-                                  iconWidget: Icon(
-                                    Icons.bookmark_add_outlined,
-                                    size: 14,
-                                  ),
-                                  textWidget: Text(
-                                    'Bookmark',
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ),
-                                buildPopupMenuItem(
-                                  value: 2,
-                                  iconWidget: Icon(
-                                    Icons.delete_outlined,
-                                    size: 14,
-                                  ),
-                                  textWidget: Text(
-                                    'Delete',
-                                    style: TextStyle(fontSize: 12),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: PopupMenuButton(
+                                      onSelected: (value) {
+                                        switch (value) {
+                                          case 0:
+                                            {
+                                              taskProvider.markTaskAsDone(tasks[index]);
+                                              setState(() {});
+                                              return;
+                                            }
+                                          case 1:
+                                            if(tasks[index].isBookmared==true){
+                                              taskProvider.deleteBookmark(tasks[index]);
+                                              setState(() {});
+                                            }else{
+                                              taskProvider.addBookmark(tasks[index]);
+                                              setState(() {});
+                                            }
+                                            return;
+                                          case 2:
+                                            {
+                                              taskProvider.deleteTask(tasks[index]);
+                                              setState(() {});
+                                              return;
+                                            }
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Icon(
+                                          Icons.more_vert,
+                                          size: 14,
+                                        ),
+                                      ),
+                                      itemBuilder: (BuildContext context) =>
+                                          <PopupMenuEntry>[
+                                        buildPopupMenuItem(
+                                          value: 0,
+                                          iconWidget: Icon(
+                                            Icons.done,
+                                            size: 14,
+                                          ),
+                                          textWidget: Text(
+                                            'Mark as Done',
+                                            style: TextStyle(fontSize: 12),
+                                          ),
+                                        ),
+                                        buildPopupMenuItem(
+                                          value: 1,
+                                          iconWidget: tasks[index].isBookmared==true
+                                            ? Icon(
+                                                Icons.bookmark_remove_outlined,
+                                                size: 14,
+                                              )
+                                            : Icon(
+                                                  Icons.bookmark_add_outlined,
+                                                  size: 14,
+                                            ),
+                                          textWidget:tasks[index].isBookmared==true
+                                            ? Text(
+                                                'Delete Bookmark',
+                                                style: TextStyle(fontSize: 12),
+                                              )
+                                            :  Text(
+                                                'Bookmark',
+                                                style: TextStyle(fontSize: 12),
+                                              ),                                        
+                                           
+                                        ),
+                                        buildPopupMenuItem(
+                                          value: 2,
+                                          iconWidget: Icon(
+                                            Icons.delete_outlined,
+                                            size: 14,
+                                          ),
+                                          textWidget: Text(
+                                            'Delete',
+                                            style: TextStyle(fontSize: 12),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -186,8 +230,10 @@ class _TasksPageState extends State<TasksPage> {
             );
           }),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          buildAddTaskDialog(context, taskProvider);
+        onPressed: ()async {
+          await buildTaskEditingDialog(context:context, taskProvider:taskProvider);
+          _taskTitleController.clear();
+          _taskDescriptionController.clear();
         },
         child: Icon(
           Icons.add,
@@ -214,12 +260,17 @@ class _TasksPageState extends State<TasksPage> {
     );
   }
 
-  Future buildAddTaskDialog(
-    BuildContext context, TaskProvider taskProvider) async {
+  Future buildTaskEditingDialog({
+    required BuildContext context,
+    required  TaskProvider taskProvider,
+    bool? editTask,int ? index,
+    }) async {
+    // editTask!=null ? _taskTitleController.value=taskProvider. : ;
     return await showDialog(
         context: context,
         builder: (BuildContext context) {
           return Form(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             key: _formKey,
             child: AlertDialog(
               shape: RoundedRectangleBorder(
@@ -236,10 +287,7 @@ class _TasksPageState extends State<TasksPage> {
                         return 'Task title is required';
                       }
                     },
-                    controller: _taskTitleController,
-                    onChanged: (value) {
-                      _taskTitle = value;
-                    },
+                    controller: _taskTitleController,              
                     decoration: InputDecoration(
                       hintText: 'Title',
                     ),
@@ -257,10 +305,7 @@ class _TasksPageState extends State<TasksPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: TextField(
-                        controller: _taskDescriptionController,
-                        onChanged: (value) {
-                          _taskDescription = value;
-                        },
+                        controller: _taskDescriptionController,                    
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         decoration: InputDecoration(
@@ -299,22 +344,21 @@ class _TasksPageState extends State<TasksPage> {
                           color: Colors.green,),
                           onPressed: () async {
                             try {
-                              if (_formKey.currentState!.validate()) {
-                                print(_taskTitle);
-                                print(_taskDescription);
-
-                                taskProvider.addTask(Task(
-                                    taskTitle: _taskTitle!,
-                                    taskDescription: _taskDescription));
-                                setState(() {});
-                                _taskTitleController.clear();
-                                _taskDescriptionController.clear();
+                              if (_formKey.currentState!.validate()) { 
+                                final task=Task(
+                                  taskTitle: _taskTitleController.text,
+                                  taskDescription:_taskDescriptionController.text==''
+                                                ? 'No description' 
+                                                : _taskDescriptionController.text 
+                                );    
+                                editTask==true ? taskProvider.editTask(task,index!)
+                                              : taskProvider.addTask(task);                     
+                                
+                                setState(() {});                                
                                 Navigator.of(context).pop();
                               }
                             } catch (e) {
-                              print(e);
-                              _taskTitleController.clear();
-                              _taskDescriptionController.clear();
+                              print('error2: $e');                              
                               Navigator.of(context).pop();
                             }
                           },
@@ -345,13 +389,21 @@ class _TasksPageState extends State<TasksPage> {
               children: [
                 Container(
                   alignment: Alignment.centerRight,
-                  child: InkWell(                    
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Icon(
-                      Icons.close,
-                      size: 16,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Material(
+                      child: InkWell(                    
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Icon(
+                            Icons.close,
+                            size: 16,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -394,10 +446,3 @@ class _TasksPageState extends State<TasksPage> {
   }
 }
 
-// RawMaterialButton(
-//                   onPressed: () {},
-//                   constraints: BoxConstraints(
-//                     minWidth: 20,
-//                     minHeight: 20,
-//                   ),
-//                 ),

@@ -7,8 +7,15 @@ class Task{
 
   Task({
     required this.taskTitle,
-    this.taskDescription,
+    this.taskDescription= 'No description',
     this.isDone=false,
     this.isBookmared=false,
   });
 }
+
+// class Description{
+//   static String? getDescription(String? value){
+//     if(value==null ||value=='') 
+//       return 'No description';
+//   }
+// }

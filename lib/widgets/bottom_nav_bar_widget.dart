@@ -17,6 +17,7 @@ class _BottomNavBarWidgetState extends State<BottomNavBarWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(      
+      backgroundColor: Color(0xffddebe9),
 
       bottomNavigationBar: Container(
         decoration: BoxDecoration(

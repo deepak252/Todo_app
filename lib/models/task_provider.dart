@@ -46,6 +46,10 @@ class TaskProvider extends ChangeNotifier {
     _tasks.add(task);
     notifyListeners();
   }
+  void editTask(Task task,int index) {
+    _tasks[index]=task;
+    notifyListeners();
+  }
   void deleteTask(Task task) {
     _tasks.remove(task);
     _bookmarkedTasks.remove(task);
@@ -57,9 +61,14 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addToBookmark(Task task) {
+  void addBookmark(Task task) {
     task.isBookmared = true;
     _bookmarkedTasks.add(task);
+    notifyListeners();
+  }
+  void deleteBookmark(Task task) {
+    task.isBookmared = false;
+    _bookmarkedTasks.remove(task);
     notifyListeners();
   }
 

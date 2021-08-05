@@ -20,6 +20,7 @@ class _HistoryPageState extends State<HistoryPage> {
     TaskProvider taskProvider =
         Provider.of<TaskProvider>(context, listen: false);
     return Scaffold(
+      backgroundColor: Color(0xffddebe9),
       resizeToAvoidBottomInset: false,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(35),

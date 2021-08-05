@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/models/task_provider.dart';
@@ -23,6 +22,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
     TaskProvider taskProvider =
         Provider.of<TaskProvider>(context, listen: false);
     return Scaffold(
+      backgroundColor: Color(0xffddebe9),
       resizeToAvoidBottomInset: false,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(35),
