@@ -265,108 +265,130 @@ class _TasksPageState extends State<TasksPage> {
     required  TaskProvider taskProvider,
     bool? editTask,int ? index,
     }) async {
-    // editTask!=null ? _taskTitleController.value=taskProvider. : ;
+    int descriptionTextCount=0;
     return await showDialog(
         context: context,
         builder: (BuildContext context) {
           return Form(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             key: _formKey,
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(16.0))
-              ),
-              scrollable: true,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-              content: Column(
-                children: [
-                  TextFormField(
-                    validator: (value) {
-                      if (value == null || value == '') {
-                        return 'Task title is required';
-                      }
-                    },
-                    controller: _taskTitleController,              
-                    decoration: InputDecoration(
-                      hintText: 'Title',
-                    ),
+            child: Center(
+              child: SingleChildScrollView(
+                child: AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16.0))
                   ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(0),
-                    height: 140,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black54
-                        ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: TextField(
-                        controller: _taskDescriptionController,                    
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(
-                            hintText: "Description",
-                            isCollapsed: true,
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.all(6)),
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(100),
-                        ]),
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // scrollable: true,
+                  contentPadding:
+                      EdgeInsets.only(left: 12,right:12,top:16,bottom: 8),
+                  content: Column(
                     children: [
-                      IconButton(
-                        padding: EdgeInsets.all(0),
-                        splashRadius: 20,
-                        icon: Icon(Icons.close,
-                          color: Colors.red,
+                      TextFormField(
+                        validator: (value) {
+                          if (value == null || value == '') {
+                            return 'Task title is required';
+                          }
+                        },
+                        controller: _taskTitleController,              
+                        decoration: InputDecoration(
+                          hintText: 'Title',
                         ),
-                          onPressed: () async {
-                            _taskTitleController.clear();
-                            _taskDescriptionController.clear();
-                            Navigator.of(context).pop();
-                          },
-                          
                       ),
-                      IconButton(
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Container(
                         padding: EdgeInsets.all(0),
-                        splashRadius: 20,
-                        icon: Icon(
-                          Icons.done,
-                          color: Colors.green,),
-                          onPressed: () async {
-                            try {
-                              if (_formKey.currentState!.validate()) { 
-                                final task=Task(
-                                  taskTitle: _taskTitleController.text,
-                                  taskDescription:_taskDescriptionController.text==''
-                                                ? 'No description' 
-                                                : _taskDescriptionController.text 
-                                );    
-                                editTask==true ? taskProvider.editTask(task,index!)
-                                              : taskProvider.addTask(task);                     
-                                
-                                setState(() {});                                
-                                Navigator.of(context).pop();
-                              }
-                            } catch (e) {
-                              print('error2: $e');                              
-                              Navigator.of(context).pop();
-                            }
-                          },
-                          
+                        height: 140,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black54
+                            ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: TextField(
+                            controller: _taskDescriptionController,                    
+                            maxLines: null,
+                            keyboardType: TextInputType.multiline,
+                            decoration: InputDecoration(
+                                hintText: "Description",
+                                isCollapsed: true,
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.all(6),
+                                // counterText: '${_taskDescriptionController.text.length}'
+                            ),
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(100),
+                            ],
+                            onChanged: (value){
+                              setState(() {
+                                print(value.length);
+                                descriptionTextCount = value.length;
+                              });
+                            },
+                          ),
                       ),
+                      // SizedBox(
+                      //   height: 6,
+                      // ),
+                      // Align(
+                      //   alignment: Alignment.bottomRight,
+                      //   child:Text('$descriptionTextCount/100',
+                      //     style: TextStyle(fontSize: 12),
+                      //   ),
+                      // ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            padding: EdgeInsets.all(0),
+                            splashRadius: 20,
+                            icon: Icon(Icons.close,
+                              color: Colors.red,
+                            ),
+                              onPressed: () async {
+                                _taskTitleController.clear();
+                                _taskDescriptionController.clear();
+                                Navigator.of(context).pop();
+                              },
+                              
+                          ),
+                          IconButton(
+                            padding: EdgeInsets.all(0),
+                            splashRadius: 20,
+                            icon: Icon(
+                              Icons.done,
+                              color: Colors.green,),
+                              onPressed: () async {
+                                try {
+                                  if (_formKey.currentState!.validate()) { 
+                                    final task=Task(
+                                      taskTitle: _taskTitleController.text,
+                                      taskDescription:_taskDescriptionController.text==''
+                                                    ? 'No description' 
+                                                    : _taskDescriptionController.text 
+                                    );    
+                                    editTask==true ? taskProvider.editTask(task,index!)
+                                                  : taskProvider.addTask(task);                     
+                                    
+                                    setState(() {});                                
+                                    Navigator.of(context).pop();
+                                  }
+                                } catch (e) {
+                                  print('error2: $e');                              
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                              
+                          ),
+                        ],
+                      )
                     ],
-                  )
-                ],
+                  ),
+                ),
               ),
             ),
           );
