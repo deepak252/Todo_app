@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/constants.dart';
+import 'package:todo_app/models/task.dart';
 import 'package:todo_app/models/task_provider.dart';
 import 'package:todo_app/widgets/circular_border_card_widget.dart';
 
 const kHeadingTextStyle = TextStyle(
   color: Color(0xff6c40ff),
   fontWeight: FontWeight.bold,
-  fontSize: 12,
+  fontSize: 14,
 );
 
 class HistoryPage extends StatefulWidget {
@@ -23,10 +25,10 @@ class _HistoryPageState extends State<HistoryPage> {
       backgroundColor: Color(0xffddebe9),
       resizeToAvoidBottomInset: false,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(35),
+        preferredSize: Size.fromHeight(55),
         child: AppBar(
           title: Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
+            padding: const EdgeInsets.only(bottom: 10.0),
             child: Text(
               'History',
             ),
@@ -61,7 +63,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           style: TextStyle(
                               color: Color(0xff6c40ff),
                               fontWeight: FontWeight.bold,
-                              fontSize: 16
+                              fontSize: 18
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -72,9 +74,9 @@ class _HistoryPageState extends State<HistoryPage> {
                       padding: EdgeInsets.all(0),
                       splashRadius: 20,
                       icon: Icon(
-                        Icons.undo,
-                        // color: Colors.red,
-                        size: 16,
+                        Icons.restore,
+                        color: Colors.green,
+                        size: kIconSize+5,
                       ),
                       onPressed: () {
                         taskProvider.unduDoneTask(history[index]);
@@ -88,13 +90,15 @@ class _HistoryPageState extends State<HistoryPage> {
                       splashRadius: 20,
                       icon: Icon(
                         Icons.delete,
-                        size: 16,
+                        size: kIconSize+5,
+                        color: Colors.red,
                       ),
-                      onPressed: ()  {
-                        taskProvider.deleteHistory(history[index]);
-                        setState(() {
-                          
-                        });
+                      onPressed: () async  {                        
+                        await buildConfirmDeleteDialog(
+                          context: context,
+                          task: history[index],
+                          taskProvider: taskProvider
+                        );
                       },
                     ),
                   ],
@@ -105,21 +109,92 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  PopupMenuItem<dynamic> buildPopupMenuItem(
-      {final iconWidget, final textWidget, required final value}) {
-    return PopupMenuItem(
-      value: value,
-      height: 40,
-      child: Container(
-          padding: EdgeInsets.all(0),
-          child: Row(children: [
-            iconWidget,
-            SizedBox(
-              width: 16,
+  
+  Future buildConfirmDeleteDialog({
+    required BuildContext context,
+    required TaskProvider taskProvider,
+    required Task task}) async {
+    return await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+            scrollable: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 16),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+
+              children: [                
+                Text(
+                  'Delete!',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(8)
+                  ),
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Task: ',
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: '${task.taskTitle}',
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w500
+                          ),
+                        )
+                      ]
+                    ),
+                  )
+                ),
+                SizedBox(
+                  height: 12,
+                ), 
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                      }, 
+                      child: Text('Cancel'),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.black54,
+                        primary: Colors.white,
+                      ),
+                    ),
+                    Spacer(),
+                    TextButton(
+                      onPressed: () {
+                        taskProvider.deleteHistory(task);
+                        setState(() {
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: Text('Delete'),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.red[400],
+                        primary: Colors.white,
+                      ),
+                    ),
+                  ],
+                )               
+                
+              ],
             ),
-            textWidget
-          ])),
-    );
+          );
+        });
   }
 
   void buildToast({required String text}) {

@@ -29,85 +29,130 @@ void main() {
   });
 }
 
+// Future buildTaskEditingDialog({
+  //   required BuildContext context,
+  //   required  TaskProvider taskProvider,
+  //   bool? editTask,int ? index,
+  //   }) async {
+  //   int descriptionTextCount=0;
+  //   return await showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return Form(
+  //           autovalidateMode: AutovalidateMode.onUserInteraction,
+  //           key: _formKey,
+  //           child: Center(
+  //             child: SingleChildScrollView(
+  //               child: AlertDialog(
+  //                 shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.all(Radius.circular(16.0))
+  //                 ),
+  //                 // scrollable: true,
+  //                 contentPadding:
+  //                     EdgeInsets.only(left: 12,right:12,top:16,bottom: 8),
+  //                 content: Column(
+  //                   children: [
+  //                     TextFormField(
+  //                       validator: (value) {
+  //                         if (value == null || value == '') {
+  //                           return 'Task title is required';
+  //                         }
+  //                       },
+  //                       controller: _taskTitleController,
+  //                       decoration: InputDecoration(
+  //                         hintText: 'Title',
+  //                       ),
+  //                     ),
+  //                     SizedBox(
+  //                       height: 12,
+  //                     ),
+  //                     Container(
+  //                       padding: EdgeInsets.all(0),
+  //                       height: 140,
+  //                       decoration: BoxDecoration(
+  //                         border: Border.all(
+  //                           color: Colors.black54
+  //                           ),
+  //                         borderRadius: BorderRadius.circular(8),
+  //                       ),
+  //                       child: TextField(
+  //                           controller: _taskDescriptionController,
+  //                           maxLines: null,
+  //                           keyboardType: TextInputType.multiline,
+  //                           decoration: InputDecoration(
+  //                               hintText: "Description",
+  //                               isCollapsed: true,
+  //                               border: InputBorder.none,
+  //                               contentPadding: EdgeInsets.all(6),
+  //                               // counterText: '${_taskDescriptionController.text.length}'
+  //                           ),
+  //                           inputFormatters: [
+  //                             LengthLimitingTextInputFormatter(100),
+  //                           ],
+  //                           onChanged: (value){
+  //                             setState(() {
+  //                               print(value.length);
+  //                               descriptionTextCount = value.length;
+  //                             });
+  //                           },
+  //                         ),
+  //                     ),
 
-// void buildBottomSheet(BuildContext context) async {
-//   await showModalBottomSheet(
-//     context: context,
-//     builder: (builder) {
-//       return DraggableScrollableSheet(
-//         expand: true,
-//         initialChildSize: 0.5,
-//         maxChildSize: 0.9,
-//         minChildSize: 0.5,
-//         builder: (_, controller) => InkWell(
-//           onTap: () {},
-//           child: Container(
-//             padding: EdgeInsets.symmetric(horizontal: 12),
-//             // height: 50,
-//             decoration: BoxDecoration(
-//                 color: Colors.white,
-//                 borderRadius: BorderRadius.only(
-//                   topLeft: Radius.circular(12),
-//                   topRight: Radius.circular(12),
-//                 )),
-//             child: Column(
-//               children: [
-//                 const SizedBox(
-//                   height: 8,
-//                 ),
-//                 Center(
-//                   child: Container(
-//                     margin: EdgeInsets.only(bottom: 8.0),
-//                     height: 4,
-//                     width: 40,
-//                     decoration: BoxDecoration(
-//                         color: Colors.black87,
-//                         borderRadius: BorderRadius.circular(12)),
-//                   ),
-//                 ),
-//                 Expanded(
-//                   child: ListView(
-//                     controller: controller,
-//                     children: [
-//                       Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         // controller: controller,
-//                         children: [
-//                           const SizedBox(
-//                             height: 8,
-//                           ),
-//                           Text(
-//                             'CATEGORY',
-//                             style: TextStyle(
-//                               fontWeight: FontWeight.bold,
-//                             ),
-//                           ),
-//                           // FilterJobCategories(),
-//                           const SizedBox(
-//                             height: 8,
-//                           ),
-//                           Text(
-//                             'TYPES',
-//                             style: TextStyle(
-//                               fontWeight: FontWeight.bold,
-//                             ),
-//                           ),
-//                           // FilterJobCategories(),
+  //                     SizedBox(
+  //                       height: 12,
+  //                     ),
+  //                     Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                       children: [
+  //                         IconButton(
+  //                           padding: EdgeInsets.all(0),
+  //                           splashRadius: 20,
+  //                           icon: Icon(Icons.close,
+  //                             color: Colors.red,
+  //                           ),
+  //                             onPressed: () async {
+  //                               _taskTitleController.clear();
+  //                               _taskDescriptionController.clear();
+  //                               Navigator.of(context).pop();
+  //                             },
 
-//                           // filterButton(context),
-//                         ],
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       );
-//       // return Container();
-//     },
-//     isScrollControlled: true,
-//     backgroundColor: Colors.transparent,
-//   );
-// }
+  //                         ),
+  //                         IconButton(
+  //                           padding: EdgeInsets.all(0),
+  //                           splashRadius: 20,
+  //                           icon: Icon(
+  //                             Icons.done,
+  //                             color: Colors.green,),
+  //                             onPressed: () async {
+  //                               try {
+  //                                 if (_formKey.currentState!.validate()) {
+  //                                   final task=Task(
+  //                                     taskTitle: _taskTitleController.text,
+  //                                     taskDescription:_taskDescriptionController.text==''
+  //                                                   ? 'No description'
+  //                                                   : _taskDescriptionController.text,
+  //                                     time: '12:40',
+  //                                   );
+  //                                   editTask==true ? taskProvider.editTask(task,index!)
+  //                                                 : taskProvider.addTask(task);
+
+  //                                   setState(() {});
+  //                                   Navigator.of(context).pop();
+  //                                 }
+  //                               } catch (e) {
+  //                                 print('error2: $e');
+  //                                 Navigator.of(context).pop();
+  //                               }
+  //                             },
+
+  //                         ),
+  //                       ],
+  //                     )
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }

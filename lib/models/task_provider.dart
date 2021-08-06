@@ -8,14 +8,15 @@ class TaskProvider extends ChangeNotifier {
     Task(
         taskTitle: 'Complete the app',
         taskDescription:
-            "We've created a college application timeline just for international students. Know what to do the year before you apply to college, while applying, and the summer before college begins."),
-    Task(taskTitle: 'Drink water', taskDescription: "Time: 4:00pm"),
-    Task(taskTitle: 'Go to shop'),
+            "We've created a college application timeline just for international students. Know what to do the year before you apply to college, while applying, and the summer before college begins.",
+            time:DateTime.now()),
+    Task(taskTitle: 'Drink water', taskDescription: "time: 4:00pm",time: DateTime.now()),
+    Task(taskTitle: 'Go to shop', time: DateTime.now()),
   ];
   List<Task> _bookmarkedTasks = [];
   List<Task> _taskHistory = [
-    Task(taskTitle: 'Bath'),
-    Task(taskTitle: 'Call Dad'),
+    Task(taskTitle: 'Bath',time:DateTime.now()),
+    Task(taskTitle: 'Call Dad', time: DateTime.now()),
   ];
 
   UnmodifiableListView<Task> get getTasks {

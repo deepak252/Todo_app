@@ -29,12 +29,13 @@ class MyApp extends StatelessWidget {
           unselectedItemColor: Colors.indigoAccent[100],
           unselectedLabelStyle: TextStyle(
             color: Color(0xff6c40ff),
-            fontSize: 12.0
+            fontSize: 14.0
           ),
           selectedLabelStyle: TextStyle(
             color: Color(0xff6c40ff),
-            fontSize: 12.0
+            fontSize: 14.0
           ),
+          
           selectedItemColor: Colors.indigo,
         )
       ),

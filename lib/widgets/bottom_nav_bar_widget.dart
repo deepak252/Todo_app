@@ -20,6 +20,7 @@ class _BottomNavBarWidgetState extends State<BottomNavBarWidget> {
       backgroundColor: Color(0xffddebe9),
 
       bottomNavigationBar: Container(
+        height: 65,
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: <BoxShadow>[
@@ -33,8 +34,9 @@ class _BottomNavBarWidgetState extends State<BottomNavBarWidget> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: BottomNavigationBar(
-            backgroundColor: Colors.white,
             currentIndex: _index,
+            backgroundColor: Colors.white,
+            iconSize: 28,
             type: BottomNavigationBarType.fixed,
             items: [
               BottomNavigationBarItem(
