@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/constants.dart';
+import 'package:todo_app/db/tasks_db.dart';
 import 'package:todo_app/models/dialog_model.dart';
+import 'package:todo_app/models/task.dart';
 import 'package:todo_app/models/task_provider.dart';
 import 'package:todo_app/widgets/circular_border_card_widget.dart';
 
@@ -16,6 +18,30 @@ class _TasksPageState extends State<TasksPage> {
   final TextEditingController _taskDescriptionController =
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  // late List<Task> tasks;
+  // bool isLoading=false;
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   refreshTasks();
+  // }
+
+  // @override
+  // void dispose() {
+  //   TasksDB.instance.close();
+  //   super.dispose();
+  // }
+
+  // Future refreshTasks() async{
+  //   setState(() {
+  //     isLoading=true;
+  //   });
+  //   this.tasks=await TasksDB.instance.readAllTasks();
+  //   setState(() {
+  //     isLoading=false;
+  //   });
+  // }
+
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +253,7 @@ class _TasksPageState extends State<TasksPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            tasks[index].isBookmared!
+                            tasks[index].isBookmared
                                 ? Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 2.0),

@@ -165,7 +165,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          bookmarks[index].isBookmared!
+                          bookmarks[index].isBookmared
                               ? Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 2.0),
