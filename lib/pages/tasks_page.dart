@@ -4,6 +4,7 @@ import 'package:todo_app/db/tasks_db.dart';
 import 'package:todo_app/models/dialog_model.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/widgets/circular_border_card_widget.dart';
+import 'package:intl/intl.dart';
 
 class TasksPage extends StatefulWidget {
   @override
@@ -331,14 +332,9 @@ class _TasksPageState extends State<TasksPage> {
   }
 
   String timeFormat(DateTime time) {
-    String hour = time.hour < 10 ? '0${time.hour}' : '${time.hour}';
-    String minute = time.minute < 10 ? '0${time.minute}' : '${time.minute}';
-    String day = time.day < 10 ? '0${time.day}' : '${time.day}';
-    String month = time. < 10 ? '0${time.month}' : '${time.month}';
-    String year = time.year < 10 ? '0${time.year}' : '${time.year}';
-    // print('$hour:$minute');
-
-    return '$day/$month/$year, $hour:$minute';
+  
+    String formattedDate = DateFormat('MMM d y– kk:mm').format(time);
+    return formattedDate;
   }
 
   void buildToast({required String text}) {

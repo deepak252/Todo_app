@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:todo_app/constants.dart';
 import 'package:todo_app/db/tasks_db.dart';
 import 'package:todo_app/models/dialog_model.dart';
@@ -205,7 +206,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
                                 )
                               : Container(),
                           Text(
-                            '${bookmarkedTask.createdTime}',
+                            '${timeFormat(bookmarkedTask.createdTime)}',
                             style: TextStyle(
                               fontSize: ktimeTextSize,
                               color: Colors.black54,
@@ -240,7 +241,11 @@ class _BookmarksPageState extends State<BookmarksPage> {
           ])),
     );
   }
-
+  
+  String timeFormat(DateTime time) {
+    String formattedDate = DateFormat('MMM d y– kk:mm').format(time);
+    return formattedDate;
+  }
   
   void buildToast({required String text}) {
     ScaffoldMessenger.of(context).showSnackBar(
