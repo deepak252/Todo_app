@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:todo_app/constants.dart';
 import 'package:todo_app/db/tasks_db.dart';
 import 'package:todo_app/models/dialog_model.dart';
 import 'package:todo_app/models/task.dart';
-import 'package:todo_app/models/task_provider.dart';
 import 'package:todo_app/widgets/circular_border_card_widget.dart';
 
 class TasksPage extends StatefulWidget {
@@ -18,13 +16,16 @@ class _TasksPageState extends State<TasksPage> {
   final TextEditingController _taskDescriptionController =
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  // late List<Task> tasks;
-  // bool isLoading=false;
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   refreshTasks();
-  // }
+  List<Task> tasks = [];
+  bool isLoading = false;
+  @override
+  void initState() {
+    super.initState();
+    // refreshTasks().whenComplete(() {
+    //   setState(() {});
+    // });
+    refreshTasks();
+  }
 
   // @override
   // void dispose() {
@@ -32,21 +33,25 @@ class _TasksPageState extends State<TasksPage> {
   //   super.dispose();
   // }
 
-  // Future refreshTasks() async{
-  //   setState(() {
-  //     isLoading=true;
-  //   });
-  //   this.tasks=await TasksDB.instance.readAllTasks();
-  //   setState(() {
-  //     isLoading=false;
-  //   });
-  // }
+  Future refreshTasks() async {
+    print('Refreshing tasks');    
+    try{
+      final allTasks = await TasksDB.instance.readTasks();
+      
+      tasks=allTasks??[];     
 
+    }catch(e){
+      print('Exception while refresh tasks: $e');
+    }
+    setState(() {
+      
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    TaskProvider taskProvider =
-        Provider.of<TaskProvider>(context, listen: false);
+
+
     return Scaffold(
         backgroundColor: Color(0xffddebe9),
         resizeToAvoidBottomInset: false,
@@ -69,9 +74,9 @@ class _TasksPageState extends State<TasksPage> {
           ),
         ),
         body: ListView.builder(
-            itemCount: taskProvider.totalTasks,
+            itemCount: tasks.length,
             itemBuilder: (context, index) {
-              final tasks = taskProvider.getTasks;
+              final task = tasks[index];
               return CircularBorderCardWidget(
                 padding: EdgeInsets.only(left: 10, right: 10, top: 10),
                 elevation: 3,
@@ -80,7 +85,7 @@ class _TasksPageState extends State<TasksPage> {
                     print('show task');
                     DialogModel.buildTaskViewerDialog(
                       context: context,
-                      task: tasks[index],
+                      task: task,
                     );
                   },
                   child: Padding(
@@ -96,7 +101,7 @@ class _TasksPageState extends State<TasksPage> {
                               child: Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: Text(
-                                  '${tasks[index].taskTitle}',
+                                  '${task.taskTitle}',
                                   style: kTaskTitleTextStyle,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -108,37 +113,35 @@ class _TasksPageState extends State<TasksPage> {
                               child: Row(
                                 children: [
                                   InkWell(
-                                    onTap: () async {
-                                      _taskTitleController.text =
-                                          tasks[index].taskTitle;
-                                      _taskDescriptionController.text =
-                                          tasks[index].taskDescription ==
-                                                  'No description'
-                                              ? ''
-                                              : tasks[index].taskDescription!;
-
-                                      await DialogModel.buildTaskEditingDialog(
-                                          context: context,
-                                          taskProvider: taskProvider,
-                                          formKey: _formKey,
-                                          taskTitleController:
-                                              _taskTitleController,
-                                          taskDescriptionController:
-                                              _taskDescriptionController,
-                                          editTask: true,
-                                          index: index,
-                                          setState: () {
-                                            setState(() {});
-                                          },
-                                          time: DateTime.now(),
-                                          );
-                                      _taskTitleController.clear();
-                                      _taskDescriptionController.clear();
-                                    },
                                     child: Padding(
                                       padding: const EdgeInsets.all(5.0),
                                       child: Icon(Icons.edit, size: kIconSize),
                                     ),
+                                    onTap: () async {
+                                      _taskTitleController.text =
+                                          task.taskTitle;
+                                      _taskDescriptionController.text =
+                                          task.taskDescription ==
+                                                  'No description'
+                                              ? ''
+                                              : task.taskDescription!;
+
+                                      await DialogModel.buildTaskEditorDialog(
+                                        context: context,
+                                        formKey: _formKey,
+                                        taskTitleController:
+                                            _taskTitleController,
+                                        taskDescriptionController:
+                                            _taskDescriptionController,
+                                        editTask: true,
+                                        time: DateTime.now(),
+                                        taskCopy: task
+                                      );
+                                      _taskTitleController.clear();
+                                      _taskDescriptionController.clear();
+                                      refreshTasks();
+                                    },
+                                    
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   ClipRRect(
@@ -146,32 +149,39 @@ class _TasksPageState extends State<TasksPage> {
                                     child: Material(
                                       color: Colors.transparent,
                                       child: PopupMenuButton(
-                                        onSelected: (value) {
+                                        onSelected: (value) async {
                                           switch (value) {
                                             case 0:
                                               {
-                                                taskProvider.markTaskAsDone(
-                                                    tasks[index]);
-                                                setState(() {});
+                                                Task markDone= task.copy(
+                                                  isDone: true,
+                                                );
+                                                TasksDB.instance.update(markDone);
+                                                refreshTasks();
                                                 return;
                                               }
                                             case 1:
-                                              if (tasks[index].isBookmared ==
-                                                  true) {
-                                                taskProvider.deleteBookmark(
-                                                    tasks[index]);
-                                                setState(() {});
+                                              if (task.isBookmared == true) {
+                                                Task deleteBookmark= task.copy(
+                                                  isBookmared: false,
+                                                );
+                                                TasksDB.instance.update(deleteBookmark);
+                                                refreshTasks();
                                               } else {
-                                                taskProvider
-                                                    .addBookmark(tasks[index]);
-                                                setState(() {});
+                                                Task addBookmark= task.copy(
+                                                  isBookmared: true,
+                                                );
+                                                TasksDB.instance.update(addBookmark);
+                                                refreshTasks();                                              
                                               }
                                               return;
                                             case 2:
                                               {
-                                                taskProvider
-                                                    .deleteTask(tasks[index]);
-                                                setState(() {});
+                                                await DialogModel.buildConfirmDeleteDialog(
+                                                  context: context, 
+                                                  task: task
+                                                );
+                                                refreshTasks();
                                                 return;
                                               }
                                           }
@@ -198,21 +208,17 @@ class _TasksPageState extends State<TasksPage> {
                                           ),
                                           buildPopupMenuItem(
                                             value: 1,
-                                            iconWidget:
-                                                tasks[index].isBookmared == true
-                                                    ? Icon(
-                                                        Icons
-                                                            .bookmark_remove_outlined,
-                                                        size: kIconSize,
-                                                      )
-                                                    : Icon(
-                                                        Icons
-                                                            .bookmark_add_outlined,
-                                                        size: kIconSize,
-                                                      ),
-                                            textWidget: tasks[index]
-                                                        .isBookmared ==
-                                                    true
+                                            iconWidget: task.isBookmared == true
+                                                ? Icon(
+                                                    Icons
+                                                        .bookmark_remove_outlined,
+                                                    size: kIconSize,
+                                                  )
+                                                : Icon(
+                                                    Icons.bookmark_add_outlined,
+                                                    size: kIconSize,
+                                                  ),
+                                            textWidget: task.isBookmared == true
                                                 ? Text(
                                                     'Delete Bookmark',
                                                     style:
@@ -245,7 +251,7 @@ class _TasksPageState extends State<TasksPage> {
                           ],
                         ),
                         Text(
-                          tasks[index].taskDescription ?? 'No description.',
+                          task.taskDescription ?? 'No description.',
                           style: kTaskDescriptionTextStyle,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
@@ -253,7 +259,7 @@ class _TasksPageState extends State<TasksPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            tasks[index].isBookmared
+                            task.isBookmared
                                 ? Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 2.0),
@@ -265,7 +271,7 @@ class _TasksPageState extends State<TasksPage> {
                                   )
                                 : Container(),
                             Text(
-                              '${minuteHour(tasks[index].time)}',
+                              '${timeFormat(task.createdTime)}',
                               style: TextStyle(
                                 fontSize: ktimeTextSize,
                                 color: Colors.black54,
@@ -287,20 +293,17 @@ class _TasksPageState extends State<TasksPage> {
               shape: CircleBorder(),
               elevation: 4,
               onPressed: () async {
-                // currentTime();
-                await DialogModel.buildTaskEditingDialog(
-                    context: context,
-                    taskProvider: taskProvider,
-                    formKey: _formKey,
-                    taskTitleController: _taskTitleController,
-                    taskDescriptionController: _taskDescriptionController,
-                    time:DateTime.now(),
-                    setState: () {
-                      setState(() {});
-                    },
-                    );
+                await DialogModel.buildTaskEditorDialog(
+                  context: context,
+                  formKey: _formKey,
+                  taskTitleController: _taskTitleController,
+                  taskDescriptionController: _taskDescriptionController,
+                  time: DateTime.now(),                  
+                );
                 _taskTitleController.clear();
                 _taskDescriptionController.clear();
+                refreshTasks();
+              
               },
               child: Icon(
                 Icons.add,
@@ -327,11 +330,15 @@ class _TasksPageState extends State<TasksPage> {
     );
   }
 
-  String minuteHour(DateTime time) {
+  String timeFormat(DateTime time) {
     String hour = time.hour < 10 ? '0${time.hour}' : '${time.hour}';
-    String minute=time.minute<10 ? '0${time.minute}' : '${time.minute}';
+    String minute = time.minute < 10 ? '0${time.minute}' : '${time.minute}';
+    String day = time.day < 10 ? '0${time.day}' : '${time.day}';
+    String month = time. < 10 ? '0${time.month}' : '${time.month}';
+    String year = time.year < 10 ? '0${time.year}' : '${time.year}';
     // print('$hour:$minute');
-    return '$hour:$minute';
+
+    return '$day/$month/$year, $hour:$minute';
   }
 
   void buildToast({required String text}) {

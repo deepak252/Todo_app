@@ -4,7 +4,7 @@ class Task{
   final int? id;
   final String taskTitle;
   final String? taskDescription;
-  final DateTime time;
+  final DateTime createdTime;
   bool isDone;
   bool isBookmared;
 
@@ -12,7 +12,7 @@ class Task{
     this.id,
     required this.taskTitle,
     this.taskDescription= 'No description',
-    required this.time,
+    required this.createdTime,
     this.isDone=false,
     this.isBookmared=false,
   });
@@ -21,7 +21,7 @@ class Task{
     TaskFields.id: id,
     TaskFields.taskTitle: taskTitle,
     TaskFields.taskDescription: taskDescription,
-    TaskFields.time: time.toIso8601String(),
+    TaskFields.time: createdTime.toIso8601String(),
     TaskFields.isDone: isDone ? 1: 0,
     TaskFields.isBookmarked: isBookmared ? 1: 0,
   };
@@ -30,7 +30,7 @@ class Task{
     id: json[TaskFields.id] as int?,
     taskTitle: json[TaskFields.taskTitle] as String, 
     taskDescription: json[TaskFields.taskDescription] as String, 
-    time: DateTime.parse(json[TaskFields.time] as String),
+    createdTime: DateTime.parse(json[TaskFields.time] as String),
     isDone: json[TaskFields.isDone]==1,
     isBookmared: json[TaskFields.isBookmarked]==1,
   );
@@ -46,14 +46,14 @@ class Task{
     id: id ?? this.id,
     taskTitle: taskTitle ?? this.taskTitle,
     taskDescription:  taskDescription ?? this.taskDescription,
-    time: time?? this.time,
+    createdTime: time?? this.createdTime,
     isDone: isDone?? this.isDone,
     isBookmared:  isBookmared ?? this.isBookmared,
   );
 }
 
 class TaskFields{
-  static final String id='_id';
+  static final String id='id';
   static final String taskTitle='taskTitle';
   static final String taskDescription='taskDescription';
   static final String time='time';

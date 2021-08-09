@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:todo_app/models/task_provider.dart';
 import 'package:todo_app/widgets/bottom_nav_bar_widget.dart';
 
 void main() {
 
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_)=>TaskProvider()),
-      ],
-      child: MyApp(),
-    )
+    MyApp()
   );
 }
 

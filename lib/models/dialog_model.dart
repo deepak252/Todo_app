@@ -1,24 +1,22 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:todo_app/db/tasks_db.dart';
 
 import 'task.dart';
-import 'task_provider.dart';
 
 class DialogModel{
 
     //**************EDIT TASK DIALOG*********************/
 
-  static Future buildTaskEditingDialog({
+  static Future buildTaskEditorDialog({
     required BuildContext context,
-    required TaskProvider taskProvider,
     required GlobalKey<FormState> formKey,
     required TextEditingController taskTitleController,
     required TextEditingController taskDescriptionController,
-    required Function setState,
     required DateTime time,
     bool? editTask,
-    int? index,
+    Task ? taskCopy,
   }) async {
     return await showDialog(
         context: context,
@@ -31,7 +29,6 @@ class DialogModel{
                 child: AlertDialog(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(16.0))),
-                  // scrollable: true,
                   contentPadding:
                       EdgeInsets.only(left: 12, right: 12, top: 16, bottom: 8),
                   content: Column(
@@ -66,12 +63,7 @@ class DialogModel{
                             isCollapsed: true,
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.all(6),
-                            // counterText: '${taskDescriptionController.text.length}'
-                          ),
-                          // inputFormatters: [
-                          //   LengthLimitingTextInputFormatter(100),
-                          // ],
-                          
+                          ),   
                         ),
                       ),
                       SizedBox(
@@ -103,23 +95,29 @@ class DialogModel{
                             onPressed: () async {
                               try {
                                 if (formKey.currentState!.validate()) {
-                                  final task = Task(
-                                    taskTitle: taskTitleController.text,
-                                    taskDescription:
-                                        taskDescriptionController.text == ''
-                                            ? 'No description'
-                                            : taskDescriptionController.text,
-                                    time: time,
+                                  final task = editTask==true 
+                                    ? taskCopy!.copy(
+                                      taskTitle: taskTitleController.text,
+                                      taskDescription: taskDescriptionController.text,
+                                    )
+                                    : Task(
+                                      taskTitle: taskTitleController.text,
+                                      taskDescription:
+                                          taskDescriptionController.text == ''
+                                              ? 'No description'
+                                              : taskDescriptionController.text,
+                                      createdTime: time,
                                   );
-                                  editTask == true
-                                      ? taskProvider.editTask(task, index!)
-                                      : taskProvider.addTask(task);
-                                  setState();
-                                  // setState(() {});
+                                  
+                                  if(editTask == true){
+                                    await TasksDB.instance.update(task);
+                                  }else{
+                                    await TasksDB.instance.create(task);
+                                  }
                                   Navigator.of(context).pop();
                                 }
                               } catch (e) {
-                                print('error2: $e');
+                                print('AddOrEdit Task Dialog Error: $e');
                                 Navigator.of(context).pop();
                               }
                             },
@@ -137,7 +135,9 @@ class DialogModel{
     //**************VIEW TASK DIALOG*********************/
   static Future buildTaskViewerDialog({
     required BuildContext context, 
-    required Task task}) async {
+    required Task task,
+    
+  }) async {
     return await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -189,6 +189,86 @@ class DialogModel{
                 SizedBox(
                   height: 12,
                 ),
+              ],
+            ),
+          );
+        });
+  }
+
+  static Future buildConfirmDeleteDialog(
+      {required BuildContext context,
+      // required TaskProvider taskProvider,
+      required Task task}) async {
+    return await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+            scrollable: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 16),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Delete!',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                ),
+                Container(
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(8)),
+                    child: RichText(
+                      text: TextSpan(
+                          text: 'Task: ',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: '${task.taskTitle}',
+                              style: TextStyle(
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w500),
+                            )
+                          ]),
+                    )),
+                SizedBox(
+                  height: 12,
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Cancel'),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.black54,
+                        primary: Colors.white,
+                      ),
+                    ),
+                    Spacer(),
+                    TextButton(
+                      onPressed: () {
+                        
+                        TasksDB.instance.delete(task.id);
+                        Navigator.pop(context);
+                      },
+                      child: Text('Delete'),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.red[400],
+                        primary: Colors.white,
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           );

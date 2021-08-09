@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:todo_app/constants.dart';
+import 'package:todo_app/db/tasks_db.dart';
 import 'package:todo_app/models/dialog_model.dart';
 import 'package:todo_app/models/task.dart';
-import 'package:todo_app/models/task_provider.dart';
 import 'package:todo_app/widgets/circular_border_card_widget.dart';
 
 const kHeadingTextStyle = TextStyle(
@@ -12,17 +11,35 @@ const kHeadingTextStyle = TextStyle(
   fontSize: 12,
 );
 
-class BookmarkPage extends StatefulWidget {
+class BookmarksPage extends StatefulWidget {
   @override
-  _BookmarkPageState createState() => _BookmarkPageState();
+  _BookmarksPageState createState() => _BookmarksPageState();
 }
 
-class _BookmarkPageState extends State<BookmarkPage> {
+class _BookmarksPageState extends State<BookmarksPage> {
+
+  List<Task> tasks = [];
+  @override
+  void initState() {
+    super.initState();
+    refreshTasks();
+  }
+
+
+  Future refreshTasks() async {
+    print('Refreshing tasks');
+    try {
+      final allBookmarkedTasks = await TasksDB.instance.getBookmarkedTasks();
+
+      tasks = allBookmarkedTasks ?? [];
+    } catch (e) {
+      print('Exception while refresh tasks: $e');
+    }
+    setState(() {});
+  }
 
   @override
-  Widget build(BuildContext context) {
-    TaskProvider taskProvider =
-        Provider.of<TaskProvider>(context, listen: false);
+  Widget build(BuildContext context) {    
     return Scaffold(
       backgroundColor: Color(0xffddebe9),
       resizeToAvoidBottomInset: false,
@@ -45,9 +62,9 @@ class _BookmarkPageState extends State<BookmarkPage> {
         ),
       ),
       body: ListView.builder(
-          itemCount: taskProvider.totalBookmarkedTasks,
+          itemCount: tasks.length,
           itemBuilder: (context, index) {
-            final bookmarks = taskProvider.getBookMarkedTasks;
+            final bookmarkedTask=tasks[index];
             return CircularBorderCardWidget(
               padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               elevation: 3,
@@ -55,7 +72,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                 onTap: () {
                   DialogModel.buildTaskViewerDialog(
                     context: context, 
-                    task: bookmarks[index],
+                    task: bookmarkedTask,
                   );
                 },
                 child: Padding(
@@ -71,7 +88,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                             child: Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
                               child: Text(
-                                '${bookmarks[index].taskTitle}',
+                                '${bookmarkedTask.taskTitle}',
                                 style: kTaskTitleTextStyle,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -85,23 +102,34 @@ class _BookmarkPageState extends State<BookmarkPage> {
                               
                               child: Material(
                                 child: PopupMenuButton(
-                                  onSelected: (value) {
+                                  onSelected: (value) async {
                                     switch (value) {
                                       case 0:
                                         {
-                                          taskProvider.deleteTask(bookmarks[index]);
-                                          setState(() {});
+                                          Task markDone = bookmarkedTask.copy(
+                                            isDone: true,
+                                          );
+                                          await TasksDB.instance.update(markDone);
+                                          refreshTasks();
                                           return;
+                                          
                                         }
                                       case 1:
                                         {
-                                          print('bookmarked');
+                                          Task deleteBookmark = bookmarkedTask.copy(
+                                            isBookmared: false,
+                                          );
+                                          await TasksDB.instance.update(deleteBookmark);
+                                          refreshTasks();
                                           return;
                                         }
                                       case 2:
                                         {
-                                          taskProvider.deleteTask(bookmarks[index]);
-                                          setState(() {});
+                                          await DialogModel.buildConfirmDeleteDialog(
+                                            context: context, 
+                                            task: bookmarkedTask
+                                          );
+                                          refreshTasks();
                                           return;
                                         }
                                     }
@@ -133,7 +161,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                                         size: kIconSize,
                                       ),
                                       textWidget: Text(
-                                        'Bookmark',
+                                        'Remove Bookmark',
                                         style: TextStyle(fontSize: 12),
                                       ),
                                     ),
@@ -156,7 +184,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                         ],
                       ),
                       Text(
-                        bookmarks[index].taskDescription ?? 'No description.',
+                        bookmarkedTask.taskDescription ?? 'No description.',
                         style: kTaskDescriptionTextStyle,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
@@ -165,7 +193,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          bookmarks[index].isBookmared
+                          bookmarkedTask.isBookmared
                               ? Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 2.0),
@@ -177,7 +205,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                                 )
                               : Container(),
                           Text(
-                            '${bookmarks[index].time}',
+                            '${bookmarkedTask.createdTime}',
                             style: TextStyle(
                               fontSize: ktimeTextSize,
                               color: Colors.black54,

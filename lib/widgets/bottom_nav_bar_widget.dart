@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_app/pages/history_page.dart';
-import 'package:todo_app/pages/bookmark_page.dart';
+import 'package:todo_app/pages/bookmarks_page.dart';
 
 import 'package:todo_app/pages/tasks_page.dart';
 
@@ -72,7 +72,7 @@ class _BottomNavBarWidgetState extends State<BottomNavBarWidget> {
       case 0:
         return TasksPage();
       case 1:
-        return BookmarkPage();
+        return BookmarksPage();
       case 2:
         return HistoryPage();
       

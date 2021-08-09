@@ -1,10 +1,9 @@
-
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:todo_app/models/task.dart';
 
 class TasksDB{
-  static final TasksDB instance=TasksDB.instance;
+  static final TasksDB instance=TasksDB._init();
   static Database? _database;
 
   TasksDB._init();
@@ -25,9 +24,8 @@ class TasksDB{
 
   Future _createDB(Database db,int version) async{
     final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
-    final boolType='BOOLEAN NOT NULL';
-    final integerType = 'INTEGER NOT NULL';
-    final textType='TEXT NOT NULL';
+    final boolType='BOOLEAN';
+    final textType='TEXT';
 
     await db.execute(
       '''
@@ -37,7 +35,7 @@ class TasksDB{
           ${TaskFields.taskDescription} $textType,
           ${TaskFields.time} $textType,
           ${TaskFields.isDone} $boolType,
-          ${TaskFields.isBookmarked} $boolType,
+          ${TaskFields.isBookmarked} $boolType
         )
       '''
     );
@@ -64,19 +62,65 @@ class TasksDB{
     }
   }
 
-  Future<List<Task>> readAllTasks() async{
-    final db=await instance.database;
-    final orderBy='${TaskFields.time} ASC';
-    final result = await db.query(tableTasks, orderBy: orderBy);
-    return result.map((json)=>
-      Task.fromJson(json)
-    ).toList();
+  Future<List<Task>?> readTasks() async{
+    try{
+      final db=await instance.database;
+      final orderBy='${TaskFields.time} ASC';
+      final result = await  db.query(
+        tableTasks, 
+        where: '${TaskFields.isDone} = 0',
+        orderBy: orderBy
+      );
+      
+      // return result.map((json) => Task.fromJson(json)).toList();
 
+      // print('result= $result');
+      // final parsed = jsonDecode(result.toString());
+      
+      return  result.map<Task>((json)=>
+        Task.fromJson(json)
+      ).toList();
+    }catch(e){
+      print('Exception while reading task: $e');
+      
+    }
+  }
+
+  Future<List<Task>?> getBookmarkedTasks() async {
+    try {
+      final db = await instance.database;
+      final orderBy = '${TaskFields.time} ASC';
+      final result = await db.query(
+        tableTasks, 
+        where: '${TaskFields.isBookmarked} = 1 AND ${TaskFields.isDone} = 0',        
+        orderBy: orderBy,        
+      );
+
+      return result.map<Task>((json) => Task.fromJson(json)).toList();
+    } catch (e) {
+      print('Exception while reading task: $e');
+    }
+  }
+  Future<List<Task>?> getTasksAllDone() async {
+    try {
+      final db = await instance.database;
+      final orderBy = '${TaskFields.time} ASC';
+      final result = await db.query(
+        tableTasks,
+        where: '${TaskFields.isDone} = 1',
+        orderBy: orderBy,
+      );
+
+      return result.map<Task>((json) => Task.fromJson(json)).toList();
+    } catch (e) {
+      print('Exception while reading task: $e');
+    }
   }
 
   Future<int> update(Task task) async{
     final db=await instance.database;
-
+    print(task.taskTitle);
+    print(task.toJson());
     return await  db.update(
       tableTasks,
       task.toJson(),
@@ -85,14 +129,18 @@ class TasksDB{
     );
   }
 
-  Future<int> delete(int id) async {
-    final db = await instance.database;
+  Future<int?> delete(int? id) async {
+    try{
+      final db = await instance.database;
 
-    return db.update(
-      tableTasks,
-      where: '${TaskFields.id} = ?',
-      whereArgs: [id],
-    );
+      return await  db.delete(
+        tableTasks,
+        where: '${TaskFields.id} = ?',
+        whereArgs: [id],
+      );
+    }catch(e){
+      print('Exception while reading task: $e');    
+    }
   }
 
   Future close() async{
